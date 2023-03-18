@@ -1,15 +1,11 @@
 # UnderTone
-This is Group N's (Rohaan Wasim, Taha Ahmad, Vivek Rajkumar, Anastasiia Rudenko) project for CS 1699.
+UnderTone is a mobile app that takes an English text input and uses machine learning-powered sentiment analysis to identify the emotion(s) expressed by that text, with the goal of helping non-native speakers of English understand how their text messages might come across to others.
 
+## Development Usage
 
-To install expo (https://docs.expo.dev/get-started/installation/):
-npm install -g expo-cli
+**PREREQUISITES:** Have [Node.js](https://nodejs.org/en) as well the `npm` package manager installed on your computer, and the Expo Go app installed on your mobile device.
 
-To run the App:
-Download Expo Go app on phone or get an ios or android emulator working
-cd into the app directory and run:
-npx expo start
-
-
-To run on web first run the following: 
-npx expo install react-native-web@~0.18.10 react-dom@18.2.0 @expo/webpack-config@^18.0.1
+1. Run `git clone https://github.com/Rohaan553/UnderTone.git` to download the app to your computer.
+2. `cd` into the app directory and run `npm install` to install the app's dependencies.
+3. Run `npx expo-cli start` to start the development server.
+4. Using your mobile device, scan the QR code which appears in the terminal window to open the app in Expo Go.
