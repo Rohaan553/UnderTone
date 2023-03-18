@@ -3,9 +3,9 @@ UnderTone is a mobile app that takes an English text input and uses machine lear
 
 ## Development Usage
 
-**PREREQUISITES:** Have [Node.js](https://nodejs.org/en) as well the `npm` package manager installed on your computer, and the Expo Go app installed on your mobile device.
+**PREREQUISITES:** Have [Node.js](https://nodejs.org/en) as well as the `npm` package manager installed on your computer, and the [Expo Go](https://expo.dev/client) app installed on your mobile device.
 
 1. Run `git clone https://github.com/Rohaan553/UnderTone.git` to download the app to your computer.
-2. `cd` into the app directory and run `npm install` to install the app's dependencies.
+2. `cd` into the `src` directory and run `npm install` to install the app's dependencies.
 3. Run `npx expo-cli start` to start the development server.
 4. Using your mobile device, scan the QR code which appears in the terminal window to open the app in Expo Go.
