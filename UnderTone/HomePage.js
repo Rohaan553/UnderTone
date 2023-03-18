@@ -12,13 +12,12 @@ const HomePage = () => {
                 style={styles.input}
                 multiline= {true}
                 numberOfLines={7}
-                underlineColorAndroid='transparent'
                 placeholder='Type or paste your text here...'
             />
             <Pressable
                 style={({pressed}) => [styles.unPressedButton,
                     {
-                    backgroundColor: pressed ? 'hsl(294, 35%, 45%)' : '#6F037B',
+                    backgroundColor: pressed ? 'hsl(294, 35%, 35%)' : '#46024E',
                     },
                     
                 ]}>
@@ -42,7 +41,7 @@ container: {
     justifyContent: 'center',
   },
 titleText: {
-    color: "#6F037B",
+    color: "#46024E",
     fontSize: 48,
     fontWeight: '900',
     paddingBottom: "2.5%",
@@ -53,7 +52,7 @@ titleText: {
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
-    padding: '2.5%',
+    padding: '2%',
   },
   input: {
     fontSize: 20,
@@ -62,9 +61,9 @@ titleText: {
     borderColor: '#6B6B6B', 
     minWidth: '65%',
     maxWidth: '65%',
-   
     margin: 12,
     borderWidth: 1,
+    borderRadius: 6,
 
   },
   unPressedButton: {
