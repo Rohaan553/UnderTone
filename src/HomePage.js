@@ -4,9 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const HomePage = () => {
     return ( 
         
-             <View style={styles.container}> 
+            <View style={styles.container}> 
             
-            <SafeAreaView>
+            <SafeAreaView style={styles.container}>
             <Text style={styles.titleText}>UnderTone</Text>  
             <TextInput
                 style={styles.input}
@@ -44,7 +44,6 @@ titleText: {
     color: "#46024E",
     fontSize: 48,
     fontWeight: '900',
-    paddingBottom: "2.5%",
     textAlign: "center",
   },
   buttonText: {
@@ -61,7 +60,9 @@ titleText: {
     borderColor: '#6B6B6B', 
     minWidth: '65%',
     maxWidth: '65%',
-    margin: 12,
+	padding: 5,
+	marginTop: 5,
+	marginBottom: 5,
     borderWidth: 1,
     borderRadius: 6,
 
