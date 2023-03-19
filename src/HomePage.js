@@ -1,18 +1,21 @@
-import { StyleSheet, Text, View, TextInput, Pressable} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme} from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 const HomePage = () => {
+	const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
+	console.log(theme);
     return ( 
         
-            <View style={styles.container}> 
+            <View style={theme == 'light' ? styles.container : styles.containerDark}> 
             
-            <SafeAreaView style={styles.container}>
-            <Text style={styles.titleText}>UnderTone</Text>  
+            <SafeAreaView style={theme == 'light' ? styles.container : styles.containerDark}>
+            <Text style={theme == 'light' ? styles.titleText : styles.titleTextDark}>UnderTone</Text>  
             <TextInput
-                style={styles.input}
+                style={theme == 'light' ? styles.input : styles.inputDark}
                 multiline= {true}
                 numberOfLines={7}
                 placeholder='Type or paste your text here...'
+				placeholderTextColor="#ECEDEE"
             />
             <Pressable
                 style={({pressed}) => [styles.unPressedButton,
@@ -34,14 +37,25 @@ const HomePage = () => {
 export default HomePage;
 
 const styles = StyleSheet.create({
-container: {
+  container: {
     flex: 1,
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  containerDark: {
+    flex: 1,
+    backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
   },
-titleText: {
+  titleText: {
     color: "#46024E",
+    fontSize: 48,
+    fontWeight: '900',
+    textAlign: "center",
+  },
+  titleTextDark: {
+	color: "white",
     fontSize: 48,
     fontWeight: '900',
     textAlign: "center",
@@ -64,8 +78,21 @@ titleText: {
 	marginTop: 5,
 	marginBottom: 5,
     borderWidth: 1,
+    borderRadius: 6
+  },
+  inputDark: {
+    fontSize: 20,
+    fontWeight: '500',
+    textAlignVertical: 'top',
+    borderColor: '#6B6B6B', 
+    minWidth: '65%',
+    maxWidth: '65%',
+	padding: 5,
+	marginTop: 5,
+	marginBottom: 5,
+    borderWidth: 1,
     borderRadius: 6,
-
+	color: "white"
   },
   unPressedButton: {
     minWidth: '65%',
