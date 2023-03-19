@@ -10,4 +10,4 @@ UnderTone is a mobile app that takes an English text input and uses machine lear
 2. `cd` into the `src` directory and run `npm install` to install the app's dependencies.
 3. Run `npx expo login` and enter your Expo account credentials to log in to Expo Application Services on your computer.
 4. Run `npx expo start` to start the development server.
-5. The development server should automatically appear on the **Home** tab of Expo Go.
+5. On your mobile device, the development server should automatically appear on the **Home** tab of Expo Go.

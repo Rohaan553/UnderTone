@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme} from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,16 +6,32 @@ const HomePage = () => {
 	const [placeholderText, setPlaceHolderText] = useState("Type or paste your text here...");
 	const [inputText, setInputText] = useState("");
 	const [isDisabled, setIsDisabled] = useState(true);
+	
 	const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
+	const clearButtonRef = useRef(); // get a reference to the Clear button
 	
 	// enable or disable clear button based on status of inputText
 	useEffect(() => {
 		if (inputText.length > 0) {
 			console.log("enabling clear button");
 			setIsDisabled(false);
+			
+			// restyle clear button
+			clearButtonRef.current.setNativeProps({
+				style: {
+					backgroundColor: '#46024E'
+				}
+			});
 		} else {
 			console.log("disabling clear button");
 			setIsDisabled(true);
+			
+			// restyle clear button
+			clearButtonRef.current.setNativeProps({
+				style: {
+					backgroundColor: 'grey'
+				}
+			});
 		}
 	}, [inputText]);
 
@@ -67,7 +83,8 @@ const HomePage = () => {
 					setInputText("");
 					setPlaceHolderText("Type or paste your text here...");
 				}}
-				disabled={isDisabled}>
+				disabled={isDisabled}
+				ref={clearButtonRef}>
 				
                 <Text style={styles.buttonText}>Clear</Text>
             </Pressable>
