@@ -30,7 +30,12 @@ const HomePage = () => {
                     backgroundColor: pressed ? 'hsl(294, 35%, 35%)' : '#46024E',
                     },
                     
-                ]}>
+                ]}
+				onPress={pressEvent => {
+					if (inputText.length == 0) {
+						alert("Please enter some text first!");
+					}
+				}}>
                 <Text style={styles.buttonText}>Analyze</Text>
             </Pressable>
 			
