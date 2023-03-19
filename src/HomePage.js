@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme} from 'rea
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 const HomePage = () => {
+	const [placeholderText, setPlaceHolderText] = useState("Type or paste your text here...");
 	const [inputText, setInputText] = useState("");
 	const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
 
@@ -16,13 +17,17 @@ const HomePage = () => {
                 style={theme == 'light' ? styles.input : styles.inputDark}
                 multiline= {true}
                 numberOfLines={7}
-                placeholder='Type or paste your text here...'
+                placeholder={placeholderText}
+				placeholderTextColor="#ECEDEE"
+				onFocus={(focusEvent) => {
+					console.log("text box focused");
+					setPlaceHolderText("");
+				}}
 				value={inputText}
 				onChangeText={text => {
 					console.log(text);
 					setInputText(text);
 				}}
-				placeholderTextColor="#ECEDEE"
             />
             <Pressable
                 style={({pressed}) => [styles.unPressedButton,
@@ -49,6 +54,7 @@ const HomePage = () => {
 				onPress={pressEvent => {
 					console.log("pressed clear");
 					setInputText("");
+					setPlaceHolderText("Type or paste your text here...");
 				}}
 				disabled={!(inputText.length > 0)}>
                 <Text style={styles.buttonText}>Clear</Text>
@@ -73,26 +79,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   titleText: {
     color: "#46024E",
     fontSize: 48,
     fontWeight: '900',
-    textAlign: "center",
+    textAlign: "center"
   },
   titleTextDark: {
 	color: "white",
     fontSize: 48,
     fontWeight: '900',
-    textAlign: "center",
+    textAlign: "center"
   },
   buttonText: {
     color: "#fff",
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
-    padding: '2%',
+    padding: '2%'
   },
   input: {
     fontSize: 20,
@@ -131,7 +137,6 @@ const styles = StyleSheet.create({
     paddingRight: "2.5%",
     paddingTop: ".5%",
     paddingBottom: ".5%",
-    borderRadius: 6,
-
+    borderRadius: 6
   },
 });
