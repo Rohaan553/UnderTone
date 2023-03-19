@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme} from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 const HomePage = () => {
+	const [inputText, setInputText] = useState("");
 	const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
-	console.log(theme);
+
     return ( 
         
             <View style={theme == 'light' ? styles.container : styles.containerDark}> 
@@ -15,6 +17,11 @@ const HomePage = () => {
                 multiline= {true}
                 numberOfLines={7}
                 placeholder='Type or paste your text here...'
+				value={inputText}
+				onChangeText={text => {
+					console.log(text);
+					setInputText(text);
+				}}
 				placeholderTextColor="#ECEDEE"
             />
             <Pressable
@@ -25,6 +32,20 @@ const HomePage = () => {
                     
                 ]}>
                 <Text style={styles.buttonText}>Analyze</Text>
+            </Pressable>
+			
+			<Pressable
+                style={({pressed}) => [styles.unPressedButton,
+                    {
+                    backgroundColor: pressed ? 'hsl(294, 35%, 35%)' : '#46024E',
+                    },
+                    
+                ]}
+				onPress={pressEvent => {
+					console.log("pressed clear");
+					setInputText("");
+				}}>
+                <Text style={styles.buttonText}>Clear</Text>
             </Pressable>
 
             </SafeAreaView>
