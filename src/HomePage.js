@@ -44,7 +44,8 @@ const HomePage = () => {
 				onPress={pressEvent => {
 					console.log("pressed clear");
 					setInputText("");
-				}}>
+				}}
+				disabled={!(inputText.length > 0)}>
                 <Text style={styles.buttonText}>Clear</Text>
             </Pressable>
 
