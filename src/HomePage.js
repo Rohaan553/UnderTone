@@ -44,7 +44,7 @@ const HomePage = () => {
             <TextInput
                 style={theme == 'light' ? styles.input : styles.inputDark}
                 multiline= {true}
-                numberOfLines={7}
+                numberOfLines={6}
                 placeholder={placeholderText}
 				placeholderTextColor={theme == 'light' ? 'grey' : 'lightgray'}
 				onFocus={focusEvent => {
@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
     borderColor: '#6B6B6B', 
     minWidth: '65%',
     maxWidth: '65%',
+    maxHeight: '30%',
 	padding: 5,
 	marginTop: 5,
 	marginBottom: 5,
@@ -149,6 +150,7 @@ const styles = StyleSheet.create({
     borderColor: '#6B6B6B', 
     minWidth: '65%',
     maxWidth: '65%',
+    maxHeight: '30%',
 	padding: 5,
 	marginTop: 5,
 	marginBottom: 5,
