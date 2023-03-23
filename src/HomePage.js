@@ -12,7 +12,7 @@ const HomePage = () => {
 
   // enable or disable clear button based on status of inputText
   useEffect(() => {
-    if (inputText.length > 0) {
+    if (isDisabled && inputText.length > 0) {
       console.log("enabling clear button");
       setIsDisabled(false);
 
@@ -22,7 +22,7 @@ const HomePage = () => {
           backgroundColor: '#46024E'
         }
       });
-    } else {
+    } else if (!isDisabled && inputText.length == 0) {
       console.log("disabling clear button");
       setIsDisabled(true);
 
@@ -64,30 +64,31 @@ const HomePage = () => {
           }
           ]}
           onPress={pressEvent => {
-            console.log("pressed Analyze")
+            console.log(`pressed Analyze with inputText ${inputText}`);
 
             if (inputText.length == 0) {
               alert("Please enter some text first!");
             } else {
               fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
-                method: "post",
+                method: "POST",
                 headers: {
-                  "Authorization": "Bearer \"YOUR_TOKEN_HERE\"",
-                  "Content-type": "application/json; charset=UTF-8"
+                  "Authorization": "Bearer TOKEN_HERE",
+                  "Content-Type": "application/json; charset=UTF-8"
                 },
-                body: {
+                body: JSON.stringify({
                   "instances": [{
                     "mimeType": "text/plain",
-                    "content": {inputText}
+                    "content": inputText
                   }]
-                }
+                })
               })
               .then(response => {
-                console.log(response);
+                console.log(`response: ${JSON.stringify(response)}`);
                 return response.json();
               })
               .then(results => {
-                console.log(results);
+                results = JSON.stringify(results);
+                console.log(`results: ${JSON.stringify(results)}`);
               })
               .catch(e => {
                 console.log(e);
