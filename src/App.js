@@ -1,4 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'expo-status-bar'; //
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, ScrollView } from 'react-native';
 import HomePage from './HomePage';
 

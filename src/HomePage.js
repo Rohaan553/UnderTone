@@ -73,7 +73,7 @@ const HomePage = () => {
               fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
                 method: "POST",
                 headers: {
-                  "Authorization": "Bearer ya29.a0Ael9sCOnGQyjIhEKx6zJSRqgl-lR7UkmvrOJmKetXwqRzD6KrH5V-a2M4EBLEtmzamurDtmIeQwG3EqtVmlUnrTq4rmv6g0isZ_S7TYta5L2RhmEgArdx5KPmRc910i6jhabEk9_NH2-w1J-uW-gUdwm9QieYLtlxWWfBeDNkjQrTcS76KVJhmK6mq0AgszdhxNXuyk2ajVXrEdpw5c3Lp9EifDGjUEE8eUAec8aCgYKAWASARESFQF4udJhc2UAC68-Fzj_fzJ75WK2GA0238",
+                  "Authorization": "Bearer TOKEN_HERE",
                   "Content-Type": "application/json; charset=UTF-8"
                 },
                 body: JSON.stringify({
