@@ -6,6 +6,7 @@ const HomePage = () => {
   const [placeholderText, setPlaceHolderText] = useState("Type or paste your text here...");
   const [inputText, setInputText] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
+  const [requestResult, setRequestResult] = useState("");
 
   const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
   const clearButtonRef = useRef(); // get a reference to the Clear button
@@ -38,7 +39,6 @@ const HomePage = () => {
   return (
 
     <View style={theme == 'light' ? styles.container : styles.containerDark}>
-
       <SafeAreaView style={theme == 'light' ? styles.container : styles.containerDark}>
         <Text style={theme == 'light' ? styles.titleText : styles.titleTextDark}>UnderTone</Text>
         <TextInput
@@ -82,22 +82,29 @@ const HomePage = () => {
                   }]
                 })
               })
-              .then(response => {
-                console.log(`response: ${JSON.stringify(response)}`);
-                return response.json();
-              })
-              .then(results => {
-                results = JSON.stringify(results);
-                console.log(`results: ${JSON.stringify(results)}`);
-              })
-              .catch(e => {
-                console.log(e);
-              })
+                .then(response => {
+                  console.log(`response: ${JSON.stringify(response)}`);
+                  return response.json();
+                })
+                .then(results => {
+                  results = JSON.stringify(results);
+                  setRequestResult(results);
+                  console.log(`results: ${JSON.stringify(results)}`);
+                })
+                .catch(e => {
+                  console.log(e);
+                })
             }
           }}>
 
           <Text style={styles.buttonText}>Analyze</Text>
         </Pressable>
+
+        <View>
+          <Text style={{ color: theme == 'light' ? 'black' : 'white' }}>
+            {requestResult ? requestResult : ""}
+          </Text>
+        </View>
 
         <Pressable
           style={({ pressed }) => [styles.unPressedButton,
@@ -108,6 +115,7 @@ const HomePage = () => {
           onPress={pressEvent => {
             console.log("pressed clear");
             setInputText("");
+            setRequestResult("");
             setPlaceHolderText("Type or paste your text here...");
           }}
           disabled={isDisabled}
@@ -118,6 +126,7 @@ const HomePage = () => {
 
       </SafeAreaView>
     </View>
+
 
 
   );
