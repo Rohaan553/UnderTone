@@ -101,16 +101,25 @@ const HomePage = () => {
         </Pressable>
 
         <Pressable
-          style={({ pressed }) => [styles.unPressedButton,
-          {
-            backgroundColor: pressed ? 'hsl(294, 35%, 35%)' : '#46024E',
-          }
-          ]}
+          style={styles.unPressedButton}
+          onPressIn={pressInEvent => {
+            clearButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'hsl(294, 35%, 35%)'
+              }
+            });
+          }}
           onPress={pressEvent => {
             console.log("pressed clear");
             setInputText("");
             setRequestResult("");
             setPlaceHolderText("Type or paste your text here...");
+
+            clearButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'grey'
+              }
+            });
           }}
           disabled={isDisabled}
           ref={clearButtonRef}>
@@ -145,11 +154,13 @@ function displayPredictionResults(rawResults) {
   console.log(confidences);
   console.log(emotions);
 
-  if (maxConfIndex == 0) { // highest confidence emotion is "neutral"
-    alert("This message is not strongly associated with any particular emotion.");
-  } else {
-    alert(`This message is most strongly associated with the emotion of ${emotions[maxConfIndex]}!`);
-  }
+  // if (maxConfIndex == 0) { // highest confidence emotion is "neutral"
+  //   alert("This message is not strongly associated with any particular emotion.");
+  // } else {
+  //   // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
+  //   // so we can use confidex indices to index into the emotions array or vice versa
+  //   alert(`This message is most strongly associated with the emotion of ${emotions[maxConfIndex]}!`);
+  // }
 }
 
 const styles = StyleSheet.create({
@@ -222,6 +233,7 @@ const styles = StyleSheet.create({
     paddingRight: "2.5%",
     paddingTop: ".5%",
     paddingBottom: ".5%",
-    borderRadius: 6
+    borderRadius: 6,
+    backgroundColor: 'grey'
   },
 });
