@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme, ScrollView } from 'react-native';
-
+import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 const HomePage = () => {
   const [placeholderText, setPlaceHolderText] = useState("Type or paste your text here...");
   const [inputText, setInputText] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
-  const [requestResult, setRequestResult] = useState(null);
+  const [requestResult, setRequestResult] = useState("");
 
   const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
   const clearButtonRef = useRef(); // get a reference to the Clear button
@@ -39,7 +39,6 @@ const HomePage = () => {
   return (
   
     <View style={theme == 'light' ? styles.container : styles.containerDark}>
-      <Text></Text>
       <SafeAreaView style={theme == 'light' ? styles.container : styles.containerDark}>
         <Text style={theme == 'light' ? styles.titleText : styles.titleTextDark}>UnderTone</Text>
         <TextInput
@@ -73,8 +72,9 @@ const HomePage = () => {
               fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
                 method: "POST",
                 headers: {
-                  "Authorization": "Bearer TOKEN_HERE",
-                  "Content-Type": "application/json; charset=UTF-8"
+                  "Authorization": "Bearer YOUR_TOKEN_HERE",
+                  "Content-Type": "application/json; charset=UTF-8",
+                  "x-goog-user-project": "practical-ai-376103"
                 },
                 body: JSON.stringify({
                   "instances": [{
@@ -83,23 +83,27 @@ const HomePage = () => {
                   }]
                 })
               })
-              .then(response => {
-                console.log(`response: ${JSON.stringify(response)}`);
-                return response.json();
-              })
-              .then(results => {
-                results = JSON.stringify(results);
-                setRequestResult(results);
-                console.log(`results: ${JSON.stringify(results)}`);
-              })
-              .catch(e => {
-                console.log(e);
-              })
+                .then(response => {
+                  console.log(`response: ${JSON.stringify(response)}`);
+                  return response.json();
+                })
+                .then(rawResults => {
+                  console.log(`results: ${JSON.stringify(rawResults)}`);
+                  emotionResult = getPredictionResults(rawResults);
+                  setRequestResult(emotionResult);
+                })
+                .catch(e => {
+                  console.log(e);
+                })
             }
           }}>
 
           <Text style={styles.buttonText}>Analyze</Text>
         </Pressable>
+
+        <Text style={{color: theme == 'light' ? 'black' : 'white'}}>
+          {requestResult}
+        </Text>
 
         <Pressable
           style={({ pressed }) => [styles.unPressedButton,
@@ -110,6 +114,7 @@ const HomePage = () => {
           onPress={pressEvent => {
             console.log("pressed clear");
             setInputText("");
+            setRequestResult("");
             setPlaceHolderText("Type or paste your text here...");
           }}
           disabled={isDisabled}
@@ -125,10 +130,37 @@ const HomePage = () => {
    
 
 
+
   );
 }
 
 export default HomePage;
+
+function getPredictionResults(rawResults) {
+  results = rawResults["predictions"][0];
+  confidences = results["confidences"];
+  emotions = results["displayNames"];
+
+  maxConf = 0.0;
+  maxConfIndex = 0;
+  confidences.forEach((conf, confIndex) => {
+    if (conf > maxConf) { // TODO: Handle ties
+      maxConf = conf;
+      maxConfIndex = confIndex;
+    }
+  });
+
+  console.log(confidences);
+  console.log(emotions);
+
+  return emotions[maxConfIndex];
+
+  // if (maxConfIndex == 0) { // highest confidence emotion is "neutral"
+  //   alert("This message is not strongly associated with any particular emotion.");
+  // } else {
+  //   alert(`This message is most strongly associated with the emotion of ${emotions[maxConfIndex]}!`); // 1:1 correspondence betwen indices in both confidence and emotion arrays
+  // }
+}
 
 const styles = StyleSheet.create({
   container: {
