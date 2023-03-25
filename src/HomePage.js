@@ -101,20 +101,23 @@ const HomePage = () => {
           <Text style={styles.buttonText}>Analyze</Text>
         </Pressable>
 
-        <Text style={{color: theme == 'light' ? 'black' : 'white'}}>
+        <Text style={{
+          display: requestResult ? 'block' : 'none',
+          color: theme == 'light' ? 'black' : 'white'
+          }}>
           {requestResult}
         </Text>
 
         <Pressable
           style={styles.unPressedButton}
-          onPressIn={pressInEvent => {
+          onPressIn={pressInEvent => { // restyle clear button on initiation of press
             clearButtonRef.current.setNativeProps({
               style: {
                 backgroundColor: 'hsl(294, 35%, 35%)'
               }
             });
           }}
-          onPress={pressEvent => {
+          onPress={pressEvent => { // when press is released
             console.log("pressed clear");
             setInputText("");
             setRequestResult("");
@@ -159,6 +162,8 @@ function getPredictionResults(rawResults) {
   console.log(confidences);
   console.log(emotions);
 
+  // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
+  // so we can use confidex indices to index into the emotions array or vice versa
   return emotions[maxConfIndex];
 
   // if (maxConfIndex == 0) { // highest confidence emotion is "neutral"
