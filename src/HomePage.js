@@ -10,8 +10,9 @@ const HomePage = () => {
 
   const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
   const clearButtonRef = useRef(); // get a reference to the Clear button
+  const analyzeButtonRef = useRef(); // get a reference to the Analyze button
 
-  // enable or disable clear button based on status of inputText
+  // enable or disable buttons based on status of inputText
   useEffect(() => {
     if (isDisabled && inputText.length > 0) {
       console.log("enabling clear button");
@@ -23,12 +24,26 @@ const HomePage = () => {
           backgroundColor: '#46024E'
         }
       });
+
+      // restyle analyze button
+      analyzeButtonRef.current.setNativeProps({
+        style: {
+          backgroundColor: '#46024E'
+        }
+      });
     } else if (!isDisabled && inputText.length == 0) {
       console.log("disabling clear button");
       setIsDisabled(true);
 
       // restyle clear button
       clearButtonRef.current.setNativeProps({
+        style: {
+          backgroundColor: 'grey'
+        }
+      });
+
+      // restyle analyze button
+      analyzeButtonRef.current.setNativeProps({
         style: {
           backgroundColor: 'grey'
         }
@@ -58,45 +73,52 @@ const HomePage = () => {
         />
 
         <Pressable
-          style={({ pressed }) => [styles.unPressedButton,
-          {
-            backgroundColor: pressed ? 'hsl(294, 35%, 35%)' : '#46024E',
-          }
-          ]}
+          style={styles.unPressedButton}
+          onPressIn={pressInEvent => { // restyle button on initiation of press
+            analyzeButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'hsl(294, 35%, 35%)'
+              }
+            });
+          }}
           onPress={pressEvent => {
             console.log(`pressed Analyze with inputText ${inputText}`);
 
-            if (inputText.length == 0) {
-              alert("Please enter some text first!");
-            } else {
-              fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
-                method: "POST",
-                headers: {
-                  "Authorization": "Bearer YOUR_TOKEN_HERE",
-                  "Content-Type": "application/json; charset=UTF-8",
-                  "x-goog-user-project": "practical-ai-376103"
-                },
-                body: JSON.stringify({
-                  "instances": [{
-                    "mimeType": "text/plain",
-                    "content": inputText
-                  }]
-                })
+            fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
+              method: "POST",
+              headers: {
+                "Authorization": "Bearer YOUR_TOKEN_HERE",
+                "Content-Type": "application/json; charset=UTF-8",
+                "x-goog-user-project": "practical-ai-376103"
+              },
+              body: JSON.stringify({
+                "instances": [{
+                  "mimeType": "text/plain",
+                  "content": inputText.trim()
+                }]
               })
-                .then(response => {
-                  console.log(`response: ${JSON.stringify(response)}`);
-                  return response.json();
-                })
-                .then(rawResults => {
-                  console.log(`results: ${JSON.stringify(rawResults)}`);
-                  emotionResult = getPredictionResults(rawResults);
-                  setRequestResult(emotionResult);
-                })
-                .catch(e => {
-                  console.log(e);
-                })
-            }
-          }}>
+            })
+            .then(response => {
+              console.log(`response: ${JSON.stringify(response)}`);
+              return response.json();
+            })
+            .then(rawResults => {
+              console.log(`results: ${JSON.stringify(rawResults)}`);
+              emotionResult = getPredictionResults(rawResults);
+              setRequestResult(emotionResult);
+            })
+            .catch(e => {
+              console.log(e);
+            })
+
+            analyzeButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: '#46024E'
+              }
+            });
+          }}
+          disabled={isDisabled}
+          ref={analyzeButtonRef}>
 
           <Text style={styles.buttonText}>Analyze</Text>
         </Pressable>
@@ -110,7 +132,7 @@ const HomePage = () => {
 
         <Pressable
           style={styles.unPressedButton}
-          onPressIn={pressInEvent => { // restyle clear button on initiation of press
+          onPressIn={pressInEvent => { // restyle button on initiation of press
             clearButtonRef.current.setNativeProps({
               style: {
                 backgroundColor: 'hsl(294, 35%, 35%)'
@@ -123,7 +145,15 @@ const HomePage = () => {
             setRequestResult("");
             setPlaceHolderText("Type or paste your text here...");
 
+            // restyle clear button
             clearButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'grey'
+              }
+            });
+
+            // restyle analyze button
+            analyzeButtonRef.current.setNativeProps({
               style: {
                 backgroundColor: 'grey'
               }
