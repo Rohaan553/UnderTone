@@ -64,7 +64,15 @@ const HomePage = () => {
           placeholderTextColor={theme == 'light' ? 'grey' : 'lightgray'}
           onFocus={focusEvent => {
             console.log("text box focused");
-            setPlaceHolderText("");
+            setPlaceHolderText(""); // clear placeholder text
+          }}
+          onBlur={blurEvent => {
+            console.log("text box blurred");
+
+            // if no text was entered, restore the placeholder text
+            if (inputText.length == 0) {
+              setPlaceHolderText("Type or paste your text here...");
+            }
           }}
           value={inputText}
           onChangeText={text => {
