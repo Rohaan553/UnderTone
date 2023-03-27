@@ -95,7 +95,7 @@ const HomePage = () => {
             fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
               method: "POST",
               headers: {
-                "Authorization": "Bearer YOUR_TOKEN_HERE",
+                "Authorization": "Bearer ya29.a0Ael9sCMVP5MOcT-xQqhwAzca1myGVBxlcjj3AnUAiVnyS5Ws9SlyAa4EgsCPONXGz-ZN-4BBlyvPguaJaXfj9K9h4Cmp1UBr4vKzEeXV02eAwY1td8SH-pgoYQPIto6riA1r_fU7MYTlyBMImw9bKFMwfu1xolT0KHiQU-1NuGXjwgAES1vyAS_yS1EzRKZT62DUUrf1QgSVnnfZ32hHdz4A_NOiwcLsokJ3EDsaCgYKAYUSARESFQF4udJhCO3EecTyurv7h_ei45McPg0238",
                 "Content-Type": "application/json; charset=UTF-8",
                 "x-goog-user-project": "practical-ai-376103"
               },
@@ -131,13 +131,6 @@ const HomePage = () => {
           <Text style={styles.buttonText}>Analyze</Text>
         </Pressable>
 
-        <Text style={{
-          display: requestResult ? 'block' : 'none',
-          color: theme == 'light' ? 'black' : 'white'
-          }}>
-          {requestResult}
-        </Text>
-
         <Pressable
           style={styles.unPressedButton}
           onPressIn={pressInEvent => { // restyle button on initiation of press
@@ -172,8 +165,11 @@ const HomePage = () => {
 
           <Text style={styles.buttonText}>Clear</Text>
         </Pressable>
-
-        <Text style={styles.titleText}>{requestResult ? requestResult : ""}</Text>
+        
+        
+          <Text style={styles.titleText}>{requestResult ? requestResult : ""}</Text>
+        
+        
 
       </SafeAreaView>
     </View>
