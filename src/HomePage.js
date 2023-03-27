@@ -95,7 +95,7 @@ const HomePage = () => {
             fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
               method: "POST",
               headers: {
-                "Authorization": "Bearer ya29.a0Ael9sCMVP5MOcT-xQqhwAzca1myGVBxlcjj3AnUAiVnyS5Ws9SlyAa4EgsCPONXGz-ZN-4BBlyvPguaJaXfj9K9h4Cmp1UBr4vKzEeXV02eAwY1td8SH-pgoYQPIto6riA1r_fU7MYTlyBMImw9bKFMwfu1xolT0KHiQU-1NuGXjwgAES1vyAS_yS1EzRKZT62DUUrf1QgSVnnfZ32hHdz4A_NOiwcLsokJ3EDsaCgYKAYUSARESFQF4udJhCO3EecTyurv7h_ei45McPg0238",
+                "Authorization": "Bearer TOKEN_HERE",
                 "Content-Type": "application/json; charset=UTF-8",
                 "x-goog-user-project": "practical-ai-376103"
               },
@@ -113,7 +113,7 @@ const HomePage = () => {
             .then(rawResults => {
               console.log(`results: ${JSON.stringify(rawResults)}`);
               emotionResult = getPredictionResults(rawResults);
-              setRequestResult(emotionResult);
+              setRequestResult(emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1)); //capitalizing result
             })
             .catch(e => {
               console.log(e);
@@ -166,9 +166,10 @@ const HomePage = () => {
           <Text style={styles.buttonText}>Clear</Text>
         </Pressable>
         
-        
-          <Text style={styles.titleText}>{requestResult ? requestResult : ""}</Text>
-        
+        <View style={styles.report}>
+          <Text style={styles.titleText}>{requestResult ? "Result" : ""}</Text>
+          <Text style={styles.reportText}>{requestResult ? requestResult : ""}</Text>
+        </View>
         
 
       </SafeAreaView>
@@ -284,5 +285,14 @@ const styles = StyleSheet.create({
     paddingBottom: ".5%",
     borderRadius: 6,
     backgroundColor: 'grey'
+  },
+  report: {
+    marginTop: '7%',
+  },
+  reportText: {
+    color: "#46024E",
+    fontSize: 32,
+    fontWeight: '600',
+    textAlign: "center"
   },
 });
