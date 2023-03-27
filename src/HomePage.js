@@ -10,8 +10,9 @@ const HomePage = () => {
 
   const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
   const clearButtonRef = useRef(); // get a reference to the Clear button
+  const analyzeButtonRef = useRef(); // get a reference to the Analyze button
 
-  // enable or disable clear button based on status of inputText
+  // enable or disable buttons based on status of inputText
   useEffect(() => {
     if (isDisabled && inputText.length > 0) {
       console.log("enabling clear button");
@@ -23,12 +24,26 @@ const HomePage = () => {
           backgroundColor: '#46024E'
         }
       });
+
+      // restyle analyze button
+      analyzeButtonRef.current.setNativeProps({
+        style: {
+          backgroundColor: '#46024E'
+        }
+      });
     } else if (!isDisabled && inputText.length == 0) {
       console.log("disabling clear button");
       setIsDisabled(true);
 
       // restyle clear button
       clearButtonRef.current.setNativeProps({
+        style: {
+          backgroundColor: 'grey'
+        }
+      });
+
+      // restyle analyze button
+      analyzeButtonRef.current.setNativeProps({
         style: {
           backgroundColor: 'grey'
         }
@@ -49,7 +64,15 @@ const HomePage = () => {
           placeholderTextColor={theme == 'light' ? 'grey' : 'lightgray'}
           onFocus={focusEvent => {
             console.log("text box focused");
-            setPlaceHolderText("");
+            setPlaceHolderText(""); // clear placeholder text
+          }}
+          onBlur={blurEvent => {
+            console.log("text box blurred");
+
+            // if no text was entered, restore the placeholder text
+            if (inputText.length == 0) {
+              setPlaceHolderText("Type or paste your text here...");
+            }
           }}
           value={inputText}
           onChangeText={text => {
@@ -58,64 +81,91 @@ const HomePage = () => {
         />
 
         <Pressable
-          style={({ pressed }) => [styles.unPressedButton,
-          {
-            backgroundColor: pressed ? 'hsl(294, 35%, 35%)' : '#46024E',
-          }
-          ]}
+          style={styles.unPressedButton}
+          onPressIn={pressInEvent => { // restyle button on initiation of press
+            analyzeButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'hsl(294, 35%, 35%)'
+              }
+            });
+          }}
           onPress={pressEvent => {
             console.log(`pressed Analyze with inputText ${inputText}`);
 
-            if (inputText.length == 0) {
-              alert("Please enter some text first!");
-            } else {
-              fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
-                method: "POST",
-                headers: {
-                  "Authorization": "Bearer YOUR_TOKEN_HERE",
-                  "Content-Type": "application/json; charset=UTF-8",
-                  "x-goog-user-project": "practical-ai-376103"
-                },
-                body: JSON.stringify({
-                  "instances": [{
-                    "mimeType": "text/plain",
-                    "content": inputText
-                  }]
-                })
+            fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
+              method: "POST",
+              headers: {
+                "Authorization": "Bearer YOUR_TOKEN_HERE",
+                "Content-Type": "application/json; charset=UTF-8",
+                "x-goog-user-project": "practical-ai-376103"
+              },
+              body: JSON.stringify({
+                "instances": [{
+                  "mimeType": "text/plain",
+                  "content": inputText.trim()
+                }]
               })
-                .then(response => {
-                  console.log(`response: ${JSON.stringify(response)}`);
-                  return response.json();
-                })
-                .then(rawResults => {
-                  console.log(`results: ${JSON.stringify(rawResults)}`);
-                  emotionResult = getPredictionResults(rawResults);
-                  setRequestResult(emotionResult);
-                })
-                .catch(e => {
-                  console.log(e);
-                })
-            }
-          }}>
+            })
+            .then(response => {
+              console.log(`response: ${JSON.stringify(response)}`);
+              return response.json();
+            })
+            .then(rawResults => {
+              console.log(`results: ${JSON.stringify(rawResults)}`);
+              emotionResult = getPredictionResults(rawResults);
+              setRequestResult(emotionResult);
+            })
+            .catch(e => {
+              console.log(e);
+            })
+
+            analyzeButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: '#46024E'
+              }
+            });
+          }}
+          disabled={isDisabled}
+          ref={analyzeButtonRef}>
 
           <Text style={styles.buttonText}>Analyze</Text>
         </Pressable>
 
-        <Text style={{color: theme == 'light' ? 'black' : 'white'}}>
+        <Text style={{
+          display: requestResult ? 'block' : 'none',
+          color: theme == 'light' ? 'black' : 'white'
+          }}>
           {requestResult}
         </Text>
 
         <Pressable
-          style={({ pressed }) => [styles.unPressedButton,
-          {
-            backgroundColor: pressed ? 'hsl(294, 35%, 35%)' : '#46024E',
-          }
-          ]}
-          onPress={pressEvent => {
+          style={styles.unPressedButton}
+          onPressIn={pressInEvent => { // restyle button on initiation of press
+            clearButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'hsl(294, 35%, 35%)'
+              }
+            });
+          }}
+          onPress={pressEvent => { // when press is released
             console.log("pressed clear");
             setInputText("");
             setRequestResult("");
             setPlaceHolderText("Type or paste your text here...");
+
+            // restyle clear button
+            clearButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'grey'
+              }
+            });
+
+            // restyle analyze button
+            analyzeButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'grey'
+              }
+            });
           }}
           disabled={isDisabled}
           ref={clearButtonRef}>
@@ -153,11 +203,15 @@ function getPredictionResults(rawResults) {
   console.log(confidences);
   console.log(emotions);
 
+  // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
+  // so we can use confidex indices to index into the emotions array or vice versa
   return emotions[maxConfIndex];
 
   // if (maxConfIndex == 0) { // highest confidence emotion is "neutral"
   //   alert("This message is not strongly associated with any particular emotion.");
   // } else {
+  //   // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
+  //   // so we can use confidex indices to index into the emotions array or vice versa
   //   alert(`This message is most strongly associated with the emotion of ${emotions[maxConfIndex]}!`); // 1:1 correspondence betwen indices in both confidence and emotion arrays
   // }
 }
@@ -232,6 +286,7 @@ const styles = StyleSheet.create({
     paddingRight: "2.5%",
     paddingTop: ".5%",
     paddingBottom: ".5%",
-    borderRadius: 6
+    borderRadius: 6,
+    backgroundColor: 'grey'
   },
 });
