@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {API_TOKEN} from '@env';
 
 const HomePage = () => {
   const [placeholderText, setPlaceHolderText] = useState("Type or paste your text here...");
@@ -91,11 +92,16 @@ const HomePage = () => {
           }}
           onPress={pressEvent => {
             console.log(`pressed Analyze with inputText ${inputText}`);
+            console.log("here");
+            console.log("here");
+            console.log("here");
+            console.log("here");
+            console.log(API_TOKEN);
 
             fetch("https://us-central1-aiplatform.googleapis.com/v1/projects/696534557838/locations/us-central1/endpoints/3459129551680962560:predict", {
               method: "POST",
               headers: {
-                "Authorization": "Bearer TOKEN_HERE",
+                "Authorization": "Bearer " + API_TOKEN,
                 "Content-Type": "application/json; charset=UTF-8",
                 "x-goog-user-project": "practical-ai-376103"
               },
