@@ -366,9 +366,11 @@ function getPredictionResults(rawResults) {
   // }
 }
 
+// Sums up all confidence values for all emotions for each message in the previous conversation
+// and returns the emotion with the maximum confidence level across all of these as a string
 function getConversationPrediction(convos) {
   if (convos) {
-    console.log(convos);
+    // console.log(convos);
     let conf_map = {};
     sums = {};
     convos.forEach((convo) => {
@@ -377,7 +379,7 @@ function getConversationPrediction(convos) {
       confidences = results["confidences"];
       emotions = results["displayNames"];
 
-      
+    
       confidences.forEach((conf, confIndex) => {
         
         if (emotions[confIndex] in sums) {
