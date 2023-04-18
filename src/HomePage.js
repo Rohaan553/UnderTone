@@ -37,12 +37,14 @@ const HomePage = () => {
           backgroundColor: '#46024E'
         }
       });
-
-      analyzeConvoButtonRef.current.setNativeProps({
-        style: {
-          backgroundColor: '#46024E'
-        }
-      });
+      console.log(conversation.length)
+      if (conversation.length > 0) {
+        analyzeConvoButtonRef.current.setNativeProps({
+          style: {
+            backgroundColor: '#46024E'
+          }
+        });
+      }   
     } else if (!isDisabled && inputText.length == 0) {
       console.log("disabling clear button");
       setIsDisabled(true);
@@ -119,9 +121,9 @@ const HomePage = () => {
           onPress={pressEvent => {
             console.log(`pressed Analyze with inputText ${inputText}`);
 
-            console.log(API_TOKEN);
-            console.log(PROJECT_ID);
-            console.log(ENDPOINT_ID);
+            // console.log(API_TOKEN);
+            // console.log(PROJECT_ID);
+            // console.log(ENDPOINT_ID);
 
 
             fetch(`https://us-central1-aiplatform.googleapis.com/ui/projects/${PROJECT_ID}/locations/us-central1/endpoints/${ENDPOINT_ID}:predict`, {
@@ -184,9 +186,9 @@ const HomePage = () => {
           onPress={pressEvent => {
             console.log(`pressed Analyze conversation with inputText ${inputText}`);
 
-            console.log(API_TOKEN);
-
-            fetch(`https://us-central1-aiplatform.googleapis.com/ui/projects/${PROJECT_ID}/locations/us-central1/endpoints/${ENDPOINT_ID}:predict`, {
+            // console.log(API_TOKEN);
+            if (inputText) { // Don't fetch is there isn't any text in the input box
+              fetch(`https://us-central1-aiplatform.googleapis.com/ui/projects/${PROJECT_ID}/locations/us-central1/endpoints/${ENDPOINT_ID}:predict`, {
               method: "POST",
               headers: {
                 "Authorization": "Bearer " + API_TOKEN,
@@ -199,31 +201,36 @@ const HomePage = () => {
                   "content": inputText.trim()
                 }]
               })
-            })
-            .then(response => {
-              console.log(`response: ${JSON.stringify(response)}`);
-              return response.json();
-            })
-            .then(rawResults => {
-              if (inputText) { // Conversation might exist even if there is no current message
+              })
+              .then(response => {
+                console.log(`response: ${JSON.stringify(response)}`);
+                return response.json();
+              })
+              .then(rawResults => {
+                
                 console.log(`results: ${JSON.stringify(rawResults)}`);
                 emotionResult = getPredictionResults(rawResults);
                 setResetDisabled(false);
-              }
-              setConversation(prevConvo => [...prevConvo, {"input_text": inputText, "rawResults": rawResults, "emotion": emotionResult}]);
+                
+                setConversation(prevConvo => [...prevConvo, {"input_text": inputText, "rawResults": rawResults, "emotion": emotionResult}]);
+                let convoEmotion = getConversationPrediction(conversation);
+                setConvoRequestResult(convoEmotion.charAt(0).toUpperCase() + convoEmotion.slice(1));
+                
+              })
+              .catch(e => {
+                console.log(e);
+              })
+
+              analyzeConvoButtonRef.current.setNativeProps({
+                style: {
+                  backgroundColor: '#46024E'
+                }
+            });
+            } else { // no input so just evaluate the existing conversation
               let convoEmotion = getConversationPrediction(conversation);
               setConvoRequestResult(convoEmotion.charAt(0).toUpperCase() + convoEmotion.slice(1));
-              
-            })
-            .catch(e => {
-              console.log(e);
-            })
-
-            analyzeConvoButtonRef.current.setNativeProps({
-              style: {
-                backgroundColor: '#46024E'
-              }
-            });
+            }
+            
           }}
           disabled={resetDisabled}
           ref={analyzeConvoButtonRef}>
