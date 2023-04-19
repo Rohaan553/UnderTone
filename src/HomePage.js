@@ -158,7 +158,20 @@ const HomePage = () => {
               emotionResultSecondary = getPredictionResultsSecondary(rawResults);
               setConversation(prevConvo => [...prevConvo, {"input_text": inputText, "rawResults": rawResults, "emotion": emotionResultSecondary}]);
               
-              setRequestResult(emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1) + "\n\n Secondary: \n" + emotionResultSecondary[0].charAt(0) + emotionResultSecondary[0].slice(1) + " ("+emotionResultSecondary[1]+")"); //capitalizing result
+              requestEmotionResult = emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1);
+              requestEmotionResult += "\n\n Secondary: \n" + emotionResultSecondary[0].charAt(0) + emotionResultSecondary[0].slice(1);
+              secondaryIndex = emotionResultSecondary[1];
+              if (secondaryIndex == 100) {
+                requestEmotionResult += "\n- !!equivalent!! -";
+              } else if (secondaryIndex >= 70){
+                requestEmotionResult += "\n- high -";
+              } else if (secondaryIndex >= 30){
+                requestEmotionResult += "\n- moderate -";
+              } else {
+                requestEmotionResult += "\n- low -";
+              }
+              requestEmotionResult += "\n("+secondaryIndex+"% of primary score)";
+              setRequestResult(requestEmotionResult);
               
             })
             .catch(e => {
@@ -394,8 +407,8 @@ function getPredictionResultsSecondary(rawResults) {
     }
   });
 
-  involvementIndex = maxConfSecondary / maxConf;
-  //involvementIndex = Math.round(maxConfSecondary / maxConf * 1000) / 1000;
+  //involvementIndex = maxConfSecondary / maxConf;
+  involvementIndex = (Math.round(maxConfSecondary / maxConf * 1000) / 1000)*100;
 
   console.log(confidences);
   console.log(emotions);
