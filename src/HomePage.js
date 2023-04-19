@@ -91,6 +91,8 @@ const HomePage = () => {
             });
           }}
           onPress={pressEvent => {
+            matched_initialisms = checkForInitialisms(inputText);
+            matched_expansions = checkForExpansions(inputText);
             console.log(`pressed Analyze with inputText ${inputText}`);
             console.log("here");
             console.log("here");
@@ -217,6 +219,18 @@ function getPredictionResults(rawResults) {
   //   // so we can use confidex indices to index into the emotions array or vice versa
   //   alert(`This message is most strongly associated with the emotion of ${emotions[maxConfIndex]}!`); // 1:1 correspondence betwen indices in both confidence and emotion arrays
   // }
+}
+
+function checkForInitialisms(message){
+  fetch("./ite.json")
+    .then((response) => {response.json})
+    .then((json) => console.log(json));
+}
+
+function checkForExpansions(message){
+  fetch("./eti.json")
+    .then((response) => {response.json})
+    .then((json) => console.log(json))
 }
 
 const styles = StyleSheet.create({
