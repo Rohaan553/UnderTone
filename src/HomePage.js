@@ -153,7 +153,13 @@ const HomePage = () => {
               setConversation(prevConvo => [...prevConvo, {"input_text": inputText, "rawResults": rawResults, "emotion": emotionResult}]);
               setResetDisabled(false);
               setConvoRequestResult("");
-              setRequestResult(emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1)); //capitalizing result
+              //setRequestResult(emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1)); //capitalizing result
+              
+              emotionResultSecondary = getPredictionResultsSecondary(rawResults);
+              setConversation(prevConvo => [...prevConvo, {"input_text": inputText, "rawResults": rawResults, "emotion": emotionResultSecondary}]);
+              
+              setRequestResult(emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1) + "\n\n Secondary: \n" + emotionResultSecondary[0].charAt(0) + emotionResultSecondary[0].slice(1) + " ("+emotionResultSecondary[1]+")"); //capitalizing result
+              
             })
             .catch(e => {
              
@@ -364,6 +370,39 @@ function getPredictionResults(rawResults) {
   //   // so we can use confidex indices to index into the emotions array or vice versa
   //   alert(`This message is most strongly associated with the emotion of ${emotions[maxConfIndex]}!`); // 1:1 correspondence betwen indices in both confidence and emotion arrays
   // }
+}
+function getPredictionResultsSecondary(rawResults) {
+  results = rawResults["predictions"][0];
+  confidences = results["confidences"];
+  emotions = results["displayNames"];
+
+  maxConf = 0.0;
+  maxConfIndex = 0;
+  confidences.forEach((conf, confIndex) => {
+    if (conf > maxConf) { 
+      maxConf = conf;
+      maxConfIndex = confIndex;
+    }
+  });
+
+  maxConfSecondary = 0.0;
+  maxConfIndexSecondary = 0;
+  confidences.forEach((conf, confIndex) => {
+    if ((conf > maxConfSecondary) && (confIndex != maxConfIndex)) { 
+      maxConfSecondary = conf;
+      maxConfIndexSecondary = confIndex;
+    }
+  });
+
+  involvementIndex = maxConfSecondary / maxConf;
+  //involvementIndex = Math.round(maxConfSecondary / maxConf * 1000) / 1000;
+
+  console.log(confidences);
+  console.log(emotions);
+
+  // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
+  // so we can use confidex indices to index into the emotions array or vice versa
+  return [emotions[maxConfIndexSecondary], involvementIndex];
 }
 
 // Sums up all confidence values for all emotions for each message in the previous conversation
