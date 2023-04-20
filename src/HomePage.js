@@ -3,6 +3,10 @@ import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {API_TOKEN, PROJECT_ID, ENDPOINT_ID} from '@env';
 
+const highThreshold = 70; // above 70% we consider confidence to be high
+const lowThreshold = 30;  // below 30% we consider confidence to be high
+const veryLowThreshold = 10;  // below 30% we consider confidence to be high
+
 const HomePage = () => {
   const [placeholderText, setPlaceHolderText] = useState("Type or paste your text here...");
   const [inputText, setInputText] = useState("");
@@ -159,18 +163,30 @@ const HomePage = () => {
               setConversation(prevConvo => [...prevConvo, {"input_text": inputText, "rawResults": rawResults, "emotion": emotionResultSecondary}]);
               
               requestEmotionResult = emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1);
-              requestEmotionResult += "\n\n Secondary: \n" + emotionResultSecondary[0].charAt(0) + emotionResultSecondary[0].slice(1);
+              requestEmotionResult += "\n\n Secondary: \n" + emotionResultSecondary[0].charAt(0).toUpperCase() + emotionResultSecondary[0].slice(1);
               secondaryIndex = emotionResultSecondary[1];
               if (secondaryIndex == 100) {
-                requestEmotionResult += "\n- !!equivalent!! -";
-              } else if (secondaryIndex >= 70){
-                requestEmotionResult += "\n- high -";
-              } else if (secondaryIndex >= 30){
-                requestEmotionResult += "\n- moderate -";
+                requestEmotionResult += "\n!! emotions are equivalent !!";
               } else {
-                requestEmotionResult += "\n- low -";
+                if (secondaryIndex >= highThreshold){
+                  requestEmotionResult += "\n[ confidence: high ]";
+                } else if (secondaryIndex >= lowThreshold){
+                  requestEmotionResult += "\n[ confidence: moderate ]";
+                } else {
+                  requestEmotionResult += "\n[ confidence: low ]";
+                }
+                requestEmotionResult += "\n("+secondaryIndex+"%)\n\n";
               }
-              requestEmotionResult += "\n("+secondaryIndex+"% of primary score)";
+
+              aboveThreshold = emotionResultSecondary[2];
+              if (aboveThreshold.length > 0){
+                requestEmotionResult += "Other possible emotions: \n";
+
+                aboveThreshold.forEach((emotionPlusConfidence) => {
+                  requestEmotionResult += "- " + emotionPlusConfidence[0].charAt(0).toUpperCase() + emotionPlusConfidence[0].slice(1) + " (" + emotionPlusConfidence[1] + "%)\n";
+                });
+              }
+
               setRequestResult(requestEmotionResult);
               
             })
@@ -384,6 +400,7 @@ function getPredictionResults(rawResults) {
   //   alert(`This message is most strongly associated with the emotion of ${emotions[maxConfIndex]}!`); // 1:1 correspondence betwen indices in both confidence and emotion arrays
   // }
 }
+
 function getPredictionResultsSecondary(rawResults) {
   results = rawResults["predictions"][0];
   confidences = results["confidences"];
@@ -407,6 +424,50 @@ function getPredictionResultsSecondary(rawResults) {
     }
   });
 
+  aboveThreshold = [];
+  confidences.forEach((conf, confIndex) => {
+    tempInvolvementIndex = (Math.round( (conf / maxConf + Number.EPSILON) * 100));// / 100)*100;
+    if ((tempInvolvementIndex > veryLowThreshold) && (confIndex != maxConfIndex) && (confIndex != maxConfIndexSecondary)) {
+      aboveThreshold.push([emotions[confIndex], tempInvolvementIndex]);
+    }
+  });
+  aboveThreshold.sort((a, b) => (a[1] > b[1]) ? -1 : 1);
+
+  involvementIndex = (Math.round( (maxConfSecondary / maxConf + Number.EPSILON) * 100));// / 100)*100;
+
+  console.log(confidences);
+  console.log(emotions);
+
+  // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
+  // so we can use confidex indices to index into the emotions array or vice versa
+  return [emotions[maxConfIndexSecondary], involvementIndex, aboveThreshold];
+}
+/*
+function getPredictionResultsAboveThreshold(rawResults) {
+  results = rawResults["predictions"][0];
+  confidences = results["confidences"];
+  emotions = results["displayNames"];
+
+  maxConf = 0.0;
+  maxConfIndex = 0;
+  confidences.forEach((conf, confIndex) => {
+    if (conf > maxConf) { 
+      maxConf = conf;
+      maxConfIndex = confIndex;
+    }
+  });
+
+  aboveThreshold = [];
+
+  maxConfSecondary = 0.0;
+  confidences.forEach((conf, confIndex) => {
+    involvementIndex = (Math.round(conf / maxConf * 1000) / 1000)*100;
+    if ((conf > 70) && (confIndex != maxConfIndex)) { 
+      maxConfSecondary = conf;
+      maxConfIndexSecondary = confIndex;
+    }
+  });
+
   //involvementIndex = maxConfSecondary / maxConf;
   involvementIndex = (Math.round(maxConfSecondary / maxConf * 1000) / 1000)*100;
 
@@ -416,7 +477,7 @@ function getPredictionResultsSecondary(rawResults) {
   // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
   // so we can use confidex indices to index into the emotions array or vice versa
   return [emotions[maxConfIndexSecondary], involvementIndex];
-}
+} */
 
 // Sums up all confidence values for all emotions for each message in the previous conversation
 // and returns the emotion with the maximum confidence level across all of these as a string
