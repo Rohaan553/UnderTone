@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {API_TOKEN, PROJECT_ID, ENDPOINT_ID} from '@env';
+import eti from './eti.json';
+import ite from './ite.json';
 
 const HomePage = () => {
   const [placeholderText, setPlaceHolderText] = useState("Type or paste your text here...");
@@ -121,6 +123,8 @@ const HomePage = () => {
           onPress={pressEvent => {
             matched_initialisms = checkForInitialisms(inputText);
             matched_expansions = checkForExpansions(inputText);
+            console.log(initialisms);
+            console.log(matched_expansions);
             console.log(`pressed Analyze with inputText ${inputText}`);
 
             // console.log(API_TOKEN);
@@ -459,15 +463,32 @@ function getConversationPrediction(convos) {
 }
 
 function checkForInitialisms(message){
-  fetch("./ite.json")
-    .then((response) => {response.json})
-    .then((json) => console.log(json));
+  initialisms = [];
+  splitMessage = message.toLowerCase().split(" ");
+  for (let i = 0; i < splitMessage.length; i++) {
+    if (splitMessage[i] in ite) {
+      // console.log(ite[`${splitMessage[i]}`]);
+      initialisms.push(`${splitMessage[i]} -> ${ite[`${splitMessage[i]}`]}`);
+    }
+  }
+
+  return initialisms;
 }
 
 function checkForExpansions(message){
-  fetch("./eti.json")
-    .then((response) => {response.json})
-    .then((json) => console.log(json))
+  expansions = [];
+  splitMessage = message.toLowerCase().split(" ");
+  for (let start = 0; start < splitMessage.length; start++) {
+    for (let end = start + 1; end <= splitMessage.length; end++) {
+      currSetOfWords = splitMessage.slice(start, end).join(" ");
+      if (currSetOfWords in eti) {
+        // console.log(eti[`${currSetOfWords}`])
+        expansions.push(`${currSetOfWords} -> ${eti[`${currSetOfWords}`]}`);
+      }
+    }
+  }
+
+  return expansions;
 }
 
 const styles = StyleSheet.create({
