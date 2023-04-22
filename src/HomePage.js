@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {API_TOKEN, PROJECT_ID, ENDPOINT_ID} from '@env';
+import {API_TOKEN, PROJECT_ID, ENDPOINT_ID, API_KEY} from '@env';
 
 const highThreshold = 70; // above 70% we consider confidence to be high
 const lowThreshold = 30;  // below 30% we consider confidence to be high
@@ -129,76 +129,87 @@ const HomePage = () => {
             // console.log(PROJECT_ID);
             // console.log(ENDPOINT_ID);
 
-
-            fetch(`https://us-central1-aiplatform.googleapis.com/ui/projects/${PROJECT_ID}/locations/us-central1/endpoints/${ENDPOINT_ID}:predict`, {
+            fetch(`https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`, {
               method: "POST",
-              headers: {
-                "Authorization": "Bearer " + API_TOKEN,
-                "Content-Type": "application/json; charset=UTF-8",
-                "x-goog-user-project": "practical-ai-376103"
-              },
-              body: JSON.stringify({
-                "instances": [{
-                  "mimeType": "text/plain",
-                  "content": inputText.trim()
-                }]
+              body: JSON.stringify({q: [inputText.trim()], target: "en"})
+            })
+            .then((response) => response.json())
+            .then((jsonResponse) => {
+              translatedResponse = jsonResponse.data.translations[0].translatedText;
+              console.log("TRANSLATED!!! " + translatedResponse);
+              fetch(`https://us-central1-aiplatform.googleapis.com/ui/projects/${PROJECT_ID}/locations/us-central1/endpoints/${ENDPOINT_ID}:predict`, {
+                method: "POST",
+                headers: {
+                  "Authorization": "Bearer " + API_TOKEN,
+                  "Content-Type": "application/json; charset=UTF-8",
+                  "x-goog-user-project": "practical-ai-376103"
+                },
+                body: JSON.stringify({
+                  "instances": [{
+                    "mimeType": "text/plain",
+                    "content": translatedResponse.trim()
+                  }]
+                })
               })
-            })
-            .then(response => {
-              console.log(`response: ${JSON.stringify(response)}`);
-              
-              return response.json();
-            })
-            .then(rawResults => {
-              
-              console.log(`results: ${JSON.stringify(rawResults)}`);
-              
-              emotionResult = getPredictionResults(rawResults);
-              setConversation(prevConvo => [...prevConvo, {"input_text": inputText, "rawResults": rawResults, "emotion": emotionResult}]);
-              setResetDisabled(false);
-              setConvoRequestResult("");
-              //setRequestResult(emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1)); //capitalizing result
-              
-              emotionResultSecondary = getPredictionResultsSecondary(rawResults);
-              setConversation(prevConvo => [...prevConvo, {"input_text": inputText, "rawResults": rawResults, "emotion": emotionResultSecondary}]);
-              
-              requestEmotionResult = emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1);
-              requestEmotionResult += "\n\n Secondary: \n" + emotionResultSecondary[0].charAt(0).toUpperCase() + emotionResultSecondary[0].slice(1);
-              secondaryIndex = emotionResultSecondary[1];
-              if (secondaryIndex == 100) {
-                requestEmotionResult += "\n!! emotions are equivalent !!";
-              } else {
-                if (secondaryIndex >= highThreshold){
-                  requestEmotionResult += "\n[ confidence: high ]";
-                } else if (secondaryIndex >= lowThreshold){
-                  requestEmotionResult += "\n[ confidence: moderate ]";
+              .then(response => {
+                console.log(`response: ${JSON.stringify(response)}`);
+                
+                return response.json();
+              })
+              .then(rawResults => {
+                
+                console.log(`results: ${JSON.stringify(rawResults)}`);
+                
+                emotionResult = getPredictionResults(rawResults);
+                setConversation(prevConvo => [...prevConvo, {"input_text": translatedResponse, "rawResults": rawResults, "emotion": emotionResult}]);
+                setResetDisabled(false);
+                setConvoRequestResult("");
+                //setRequestResult(emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1)); //capitalizing result
+                
+                emotionResultSecondary = getPredictionResultsSecondary(rawResults);
+                setConversation(prevConvo => [...prevConvo, {"input_text": translatedResponse, "rawResults": rawResults, "emotion": emotionResultSecondary}]);
+                
+                requestEmotionResult = emotionResult.charAt(0).toUpperCase() + emotionResult.slice(1);
+                requestEmotionResult += "\n\n Secondary: \n" + emotionResultSecondary[0].charAt(0).toUpperCase() + emotionResultSecondary[0].slice(1);
+                secondaryIndex = emotionResultSecondary[1];
+                if (secondaryIndex == 100) {
+                  requestEmotionResult += "\n!! emotions are equivalent !!";
                 } else {
-                  requestEmotionResult += "\n[ confidence: low ]";
+                  if (secondaryIndex >= highThreshold){
+                    requestEmotionResult += "\n[ confidence: high ]";
+                  } else if (secondaryIndex >= lowThreshold){
+                    requestEmotionResult += "\n[ confidence: moderate ]";
+                  } else {
+                    requestEmotionResult += "\n[ confidence: low ]";
+                  }
+                  requestEmotionResult += "\n("+secondaryIndex+"%)\n\n";
                 }
-                requestEmotionResult += "\n("+secondaryIndex+"%)\n\n";
-              }
 
-              aboveThreshold = emotionResultSecondary[2];
-              if (aboveThreshold.length > 0){
-                requestEmotionResult += "Other possible emotions: \n";
+                aboveThreshold = emotionResultSecondary[2];
+                if (aboveThreshold.length > 0){
+                  requestEmotionResult += "Other possible emotions: \n";
 
-                aboveThreshold.forEach((emotionPlusConfidence) => {
-                  requestEmotionResult += "- " + emotionPlusConfidence[0].charAt(0).toUpperCase() + emotionPlusConfidence[0].slice(1) + " (" + emotionPlusConfidence[1] + "%)\n";
-                });
-              }
+                  aboveThreshold.forEach((emotionPlusConfidence) => {
+                    requestEmotionResult += "- " + emotionPlusConfidence[0].charAt(0).toUpperCase() + emotionPlusConfidence[0].slice(1) + " (" + emotionPlusConfidence[1] + "%)\n";
+                  });
+                }
 
-              setRequestResult(requestEmotionResult);
+                setRequestResult(requestEmotionResult);
+                
+              })
+              .catch(e => {
               
-            })
-            .catch(e => {
-             
-              console.log(e);
-            })
+                console.log(e);
+              })
 
-            analyzeButtonRef.current.setNativeProps({
-              style: {
-                backgroundColor: '#46024E'
-              }
+              analyzeButtonRef.current.setNativeProps({
+                style: {
+                  backgroundColor: '#46024E'
+                }
+              });
+            })
+            .catch((e) => {
+              console.log(e);
             });
           }}
           disabled={isDisabled}
