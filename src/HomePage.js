@@ -23,8 +23,8 @@ const HomePage = () => {
   const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
   const clearButtonRef = useRef(); // get a reference to the Clear button
   const analyzeButtonRef = useRef(); // get a reference to the Analyze button
-  const analyzeConvoButtonRef = useRef(); // get a reference to the Analyze button
-  const resetConvoButtonRef = useRef(); // get a reference to the reset conversation button
+  const analyzeConvoButtonRef = useRef(); // get a reference to the Analyze Conversation button
+  const resetConvoButtonRef = useRef(); // get a reference to the Reset Conversation button
 
   // enable or disable buttons based on status of inputText
   useEffect(() => {
@@ -191,7 +191,7 @@ const HomePage = () => {
               if (aboveThreshold.length > 0){
                 requestEmotionResult += "Other possible emotions: \n";
 
-                aboveThreshold.forEach((emotionPlusConfidence) => {
+                aboveThreshold.forEach(emotionPlusConfidence => {
                   requestEmotionResult += "- " + emotionPlusConfidence[0].charAt(0).toUpperCase() + emotionPlusConfidence[0].slice(1) + " (" + emotionPlusConfidence[1] + "%)\n";
                 });
               }
@@ -283,7 +283,40 @@ const HomePage = () => {
         </Pressable>
         
 
-     
+        {/* Reset Conversation Button */}
+        <Pressable
+          style={styles.unPressedButton}
+          onPressIn={pressInEvent => { // restyle button on initiation of press
+            resetConvoButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'hsl(294, 35%, 35%)'
+              }
+            });
+          }}
+          onPress={pressEvent => { // when press is released
+            console.log("pressed reset conversation");
+            alert("Conversation Reset");
+            setConversation([]);
+            setResetDisabled(true);
+            setConvoRequestResult("");
+            setRequestResult("");
+
+            analyzeConvoButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'grey'
+              }
+            });  
+            resetConvoButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: 'grey'
+              }
+            });     
+          }}
+          disabled={resetDisabled}
+          ref={resetConvoButtonRef}>
+          <Text style={styles.buttonText}>Reset Conversation</Text>
+        </Pressable>
+
         <Pressable
           style={styles.unPressedButton}
           onPressIn={pressInEvent => { // restyle button on initiation of press
@@ -317,41 +350,6 @@ const HomePage = () => {
           ref={clearButtonRef}>
 
           <Text style={styles.buttonText}>Clear</Text>
-        </Pressable>
-        
-
-        {/* Reset Conversation Button */}
-        <Pressable
-          style={styles.unPressedButton}
-          onPressIn={pressInEvent => { // restyle button on initiation of press
-            resetConvoButtonRef.current.setNativeProps({
-              style: {
-                backgroundColor: 'hsl(294, 35%, 35%)'
-              }
-            });
-          }}
-          onPress={pressEvent => { // when press is released
-            console.log("pressed reset conversation");
-            alert("Conversation Reset");
-            setConversation([]);
-            setResetDisabled(true);
-            setConvoRequestResult("");
-            setRequestResult("");
-
-            analyzeConvoButtonRef.current.setNativeProps({
-              style: {
-                backgroundColor: 'grey'
-              }
-            });  
-            resetConvoButtonRef.current.setNativeProps({
-              style: {
-                backgroundColor: 'grey'
-              }
-            });     
-          }}
-          disabled={resetDisabled}
-          ref={resetConvoButtonRef}>
-          <Text style={styles.buttonText}>Reset Conversation</Text>
         </Pressable>
 
         {convoRequestResult ? 
