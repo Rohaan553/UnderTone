@@ -140,7 +140,7 @@ const HomePage = () => {
 
             fetch(`https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`, {
               method: "POST",
-              body: JSON.stringify({q: [inputText.trim()], target: "en"})
+              body: JSON.stringify({q: [inputText], target: "en"})
             })
             .then((response) => response.json())
             .then((jsonResponse) => {
