@@ -2,7 +2,7 @@
 
 UnderTone is a mobile app that takes an English text input and uses machine learning-powered sentiment analysis to identify the emotion(s) expressed by that text, with the goal of helping non-native speakers of English understand how their text messages might come across to others.
 
-We trained our model on the GoEmotions dataset (https://github.com/google-research/google-research/tree/master/goemotions) with "[NAME]" placeholders substituted with actual names. The code for the performed data manipulation can be found here: https://colab.research.google.com/drive/1n9OumaIcEfVLhrD09wgmTAnHQFsH2Tno#scrollTo=xXoQhWOtCRwk
+We trained a VertexAI model on the GoEmotions dataset (https://github.com/google-research/google-research/tree/master/goemotions) with "[NAME]" placeholders substituted with actual names. The code for the performed data manipulation can be found here: https://colab.research.google.com/drive/1n9OumaIcEfVLhrD09wgmTAnHQFsH2Tno#scrollTo=xXoQhWOtCRwk
 
 ## How to Contribute
 
