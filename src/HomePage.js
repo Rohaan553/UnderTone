@@ -128,11 +128,6 @@ const HomePage = () => {
           }}
           onPress={pressEvent => {
             console.log(`pressed Analyze with inputText ${inputText}`);
-            
-            matched_initialisms = checkForInitialisms(inputText);
-            matched_expansions = checkForExpansions(inputText);
-            setInitialisms(matched_initialisms)
-            setExpansions(matched_expansions);
 
             // console.log(API_TOKEN);
             // console.log(PROJECT_ID);
@@ -145,6 +140,10 @@ const HomePage = () => {
             .then((response) => response.json())
             .then((jsonResponse) => {
               translatedResponse = jsonResponse.data.translations[0].translatedText;
+              matched_initialisms = checkForInitialisms(translatedResponse);
+              matched_expansions = checkForExpansions(translatedResponse);
+              setInitialisms(matched_initialisms);
+              setExpansions(matched_expansions);
               console.log("TRANSLATED!!! " + translatedResponse);
               fetch(`https://us-central1-aiplatform.googleapis.com/ui/projects/${PROJECT_ID}/locations/us-central1/endpoints/${ENDPOINT_ID}:predict`, {
                 method: "POST",
