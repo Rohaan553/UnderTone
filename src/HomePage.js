@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {API_TOKEN, PROJECT_ID, ENDPOINT_ID} from '@env';
+import eti from './eti.json';
+import ite from './ite.json';
 
 const highThreshold = 70; // above 70% we consider confidence to be high
 const lowThreshold = 30;  // below 30% we consider confidence to be high
@@ -12,6 +14,8 @@ const HomePage = () => {
   const [inputText, setInputText] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
   const [resetDisabled, setResetDisabled] = useState(true);
+  const [initialisms, setInitialisms] = useState([]);
+  const [expansions, setExpansions] = useState([]);
   const [requestResult, setRequestResult] = useState("");
   const [conversation, setConversation] = useState([]);
   const [convoRequestResult, setConvoRequestResult] = useState("");
@@ -124,6 +128,11 @@ const HomePage = () => {
           }}
           onPress={pressEvent => {
             console.log(`pressed Analyze with inputText ${inputText}`);
+            
+            matched_initialisms = checkForInitialisms(inputText);
+            matched_expansions = checkForExpansions(inputText);
+            setInitialisms(matched_initialisms)
+            setExpansions(matched_expansions);
 
             // console.log(API_TOKEN);
             // console.log(PROJECT_ID);
@@ -344,6 +353,7 @@ const HomePage = () => {
           ref={resetConvoButtonRef}>
           <Text style={styles.buttonText}>Reset Conversation</Text>
         </Pressable>
+
         {convoRequestResult ? 
             <View style={styles.report}>
             <Text style={styles.titleText}>{"Conversation Result"}</Text>
@@ -355,11 +365,33 @@ const HomePage = () => {
             <Text style={styles.reportText}>{requestResult ? requestResult : ""}</Text>
             </View>
         }
-        
 
-        
-        
+        {initialisms.length > 0 ? 
+            <View>
+              <Text style={styles.initialismTitle}>Initialisms</Text>
+              {initialisms.map((element, index) => {
+                return(
+                  <Text key={index} style={styles.initialismText}>{element}</Text>
+                )
+              })}
+            </View>
+            :
+            ""
+        }
 
+        {expansions.length > 0 ?
+            <View style={styles.report}>
+              <Text style={styles.initialismTitle}>Expansions</Text>
+              {expansions.map((element, index) => {
+                return(
+                  <Text key={index} style={styles.initialismText}>{element}</Text>
+                )
+              })}
+            </View>
+            :
+            ""
+        }
+      
       </SafeAreaView>
     </View>
    
@@ -517,6 +549,46 @@ function getConversationPrediction(convos) {
   return maxEmotion;
 }
 
+/* 
+  Parses the message one word at a time and checks the initialism-to-expansion ("ite")
+  object for any instances of initialisms and returns their respective expansions
+*/
+function checkForInitialisms(message){
+  initialisms = [];
+  // To-Do: Replace with regex that removes all possible punctuation marks
+  splitMessage = message.replaceAll(".", "").toLowerCase().split(" ");
+  for (let i = 0; i < splitMessage.length; i++) {
+    if (splitMessage[i] in ite) {
+      initialisms.push(`\"${splitMessage[i]}\" -> \"${ite[`${splitMessage[i]}`]}\"`);
+    }
+  }
+
+  return initialisms;
+}
+
+/*
+  Iterates through the message multiple times, each time starting at the next word
+  and checking the "expansion-to-initialism" (eti) object for instances of expansions of 
+  possible lengths message length - startIndex -> 1 (checking for expansions largest to smallest 
+  as some smaller expansions are substrings of larger expansions) and returns their respective initialisms.
+*/
+function checkForExpansions(message){
+  expansions = [];
+  // To-Do: Replace with regex that removes all possible punctuation marks
+  splitMessage = message.replaceAll(".", "").toLowerCase().split(" ");
+  for (let start = 0; start < splitMessage.length; start++) {
+    for (let end = splitMessage.length; end >= start + 1; end--) {
+      currSetOfWords = splitMessage.slice(start, end).join(" ");
+      if (currSetOfWords in eti) {
+        expansions.push(`\"${currSetOfWords}\" -> \"${eti[`${currSetOfWords}`]}\"`);
+        break;
+      }
+    }
+  }
+
+  return expansions;
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -609,6 +681,18 @@ const styles = StyleSheet.create({
   reportText: {
     color: "#46024E",
     fontSize: 32,
+    fontWeight: '600',
+    textAlign: "center"
+  },
+  initialismTitle: {
+    color: "#46024E",
+    fontSize: 32,
+    fontWeight: '900',
+    textAlign: "center"
+  },
+  initialismText: {
+    color: "#46024E",
+    fontSize: 20,
     fontWeight: '600',
     textAlign: "center"
   },
