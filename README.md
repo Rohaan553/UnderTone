@@ -2,6 +2,8 @@
 
 UnderTone is a mobile app that takes an English text input and uses machine learning-powered sentiment analysis to identify the emotion(s) expressed by that text, with the goal of helping non-native speakers of English understand how their text messages might come across to others.
 
+We trained our model on the GoEmotions dataset (https://github.com/google-research/google-research/tree/master/goemotions) with "[NAME]" placeholders substituted with actual names. The code for the performed data manipulation can be found here: https://colab.research.google.com/drive/1n9OumaIcEfVLhrD09wgmTAnHQFsH2Tno#scrollTo=xXoQhWOtCRwk
+
 ## How to Contribute
 
 **PREREQUISITES:**  Make sure you have [Node.js](https://nodejs.org/en) 17+ and the `npm` package manager installed on your computer. Register an Expo account at https://expo.dev/signup, install the [Expo Go](https://expo.dev/client) app on your mobile device or simulator, and log in to your Expo account within the app. Both your computer and your mobile environment should be connected to the same network.
