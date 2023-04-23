@@ -7,7 +7,7 @@ export default function App() {
   const theme = useColorScheme(); // import device's color scheme (dark mode or light mode)
   
   return (
-    <ScrollView>
+    <ScrollView style={theme == 'light' ? styles.container : styles.containerDark}>
       <TouchableWithoutFeedback 
       onPress={() => {Keyboard.dismiss();}}
       touchSoundDisabled={true}
@@ -23,14 +23,10 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1
   },
   containerDark: {
     flex: 1,
-    backgroundColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#000'
   },
 });

@@ -419,14 +419,14 @@ function getPredictionResults(rawResults) {
   console.log(emotions);
 
   // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
-  // so we can use confidex indices to index into the emotions array or vice versa
+  // so we can use confidence indices to index into the emotions array or vice versa
   return emotions[maxConfIndex];
 
   // if (maxConfIndex == 0) { // highest confidence emotion is "neutral"
   //   alert("This message is not strongly associated with any particular emotion.");
   // } else {
   //   // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
-  //   // so we can use confidex indices to index into the emotions array or vice versa
+  //   // so we can use confidence indices to index into the emotions array or vice versa
   //   alert(`This message is most strongly associated with the emotion of ${emotions[maxConfIndex]}!`); // 1:1 correspondence betwen indices in both confidence and emotion arrays
   // }
 }
@@ -469,7 +469,7 @@ function getPredictionResultsSecondary(rawResults) {
   console.log(emotions);
 
   // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
-  // so we can use confidex indices to index into the emotions array or vice versa
+  // so we can use confidence indices to index into the emotions array or vice versa
   return [emotions[maxConfIndexSecondary], involvementIndex, aboveThreshold];
 }
 /*
@@ -505,7 +505,7 @@ function getPredictionResultsAboveThreshold(rawResults) {
   console.log(emotions);
 
   // there is a 1:1 correspondence between the indices in the confidences array and the emotions array
-  // so we can use confidex indices to index into the emotions array or vice versa
+  // so we can use confidence indices to index into the emotions array or vice versa
   return [emotions[maxConfIndexSecondary], involvementIndex];
 } */
 
