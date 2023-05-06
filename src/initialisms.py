@@ -3,7 +3,7 @@ import pandas as pd
 
 '''
     Program that iterates through Chat / Internet Slang | Abbreviations | Acronyms dataset (Kaggle Link: https://www.kaggle.com/datasets/gowrishankarp/chat-slang-abbreviations-acronyms)
-    and creates a mapping from the abbreviation to the expansion (saved in the "ite.json" file) as well as a mapping from the expansion to the abbreviation (saved in the "eti.json" file)
+    and creates a mapping from abbreviations to their expansions (saved in the "ite.json" file) as well as a mapping from expansions to their abbreviations (saved in the "eti.json" file)
 '''
 if __name__ == "__main__":
     # The dataset in csv form can be downloaded from the Kaggle link above
