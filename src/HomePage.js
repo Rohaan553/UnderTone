@@ -217,6 +217,7 @@ const HomePage = () => {
               });
             })
             .catch((e) => {
+              console.log("TRANSLATION FAILED!!!!");
               console.log(e);
             });
           }}
