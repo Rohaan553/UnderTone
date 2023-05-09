@@ -117,6 +117,7 @@ const HomePage = () => {
           }}
         />
 
+        {/* Analyze Button */}
         <Pressable
           style={styles.unPressedButton}
           onPressIn={pressInEvent => { // restyle button on initiation of press
@@ -128,16 +129,6 @@ const HomePage = () => {
           }}
           onPress={pressEvent => {
             console.log(`pressed Analyze with inputText ${inputText}`);
-            
-            matched_initialisms = checkForInitialisms(inputText);
-            matched_expansions = checkForExpansions(inputText);
-            setInitialisms(matched_initialisms)
-            setExpansions(matched_expansions);
-
-            // console.log(API_TOKEN);
-            // console.log(PROJECT_ID);
-            // console.log(ENDPOINT_ID);
-
 
             fetch(`https://us-central1-aiplatform.googleapis.com/ui/projects/${PROJECT_ID}/locations/us-central1/endpoints/${ENDPOINT_ID}:predict`, {
               method: "POST",
@@ -197,10 +188,13 @@ const HomePage = () => {
               }
 
               setRequestResult(requestEmotionResult);
-              
+
+              matched_initialisms = checkForInitialisms(inputText);
+              matched_expansions = checkForExpansions(inputText);
+              setInitialisms(matched_initialisms);
+              setExpansions(matched_expansions);
             })
             .catch(e => {
-             
               console.log(e);
             })
 
@@ -300,6 +294,8 @@ const HomePage = () => {
             setResetDisabled(true);
             setConvoRequestResult("");
             setRequestResult("");
+            setInitialisms([]);
+            setExpansions([]);
 
             analyzeConvoButtonRef.current.setNativeProps({
               style: {
@@ -316,7 +312,8 @@ const HomePage = () => {
           ref={resetConvoButtonRef}>
           <Text style={styles.buttonText}>Reset Conversation</Text>
         </Pressable>
-
+        
+        {/* Clear Button */}
         <Pressable
           style={styles.unPressedButton}
           onPressIn={pressInEvent => { // restyle button on initiation of press
@@ -331,6 +328,8 @@ const HomePage = () => {
             setInputText("");
             setRequestResult("");
             setPlaceHolderText("Type or paste your text here...");
+            setInitialisms([]);
+            setExpansions([]);
 
             // restyle clear button
             clearButtonRef.current.setNativeProps({
@@ -364,7 +363,7 @@ const HomePage = () => {
             </View>
         }
 
-        {initialisms.length > 0 ? 
+        {!convoRequestResult && initialisms.length > 0 ? 
             <View>
               <Text style={styles.initialismTitle}>Initialisms</Text>
               {initialisms.map((element, index) => {
@@ -377,7 +376,7 @@ const HomePage = () => {
             ""
         }
 
-        {expansions.length > 0 ?
+        {!convoRequestResult && expansions.length > 0 ?
             <View style={styles.report}>
               <Text style={styles.initialismTitle}>Expansions</Text>
               {expansions.map((element, index) => {
