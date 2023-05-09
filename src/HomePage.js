@@ -130,12 +130,18 @@ const HomePage = () => {
           onPress={pressEvent => {
             console.log(`pressed Analyze with inputText ${inputText}`);
 
-            fetch(`https://us-central1-aiplatform.googleapis.com/ui/projects/${PROJECT_ID}/locations/us-central1/endpoints/${ENDPOINT_ID}:predict`, {
+            fetch(`https://translation.googleapis.com/language/translate/v2`, {
               method: "POST",
-              body: JSON.stringify({q: [inputText], target: "en"})
+              headers: {
+                "Authorization": "Bearer " + API_TOKEN,
+                "Content-Type": "application/json; charset=utf-8",
+                "x-goog-user-project": "practical-ai-375615"
+              },
+              body: JSON.stringify({"q": [inputText], "target": "en"})
             })
             .then((response) => response.json())
             .then((jsonResponse) => {
+              console.log(jsonResponse);
               translatedResponse = jsonResponse.data.translations[0].translatedText;
               matched_initialisms = checkForInitialisms(translatedResponse);
               matched_expansions = checkForExpansions(translatedResponse);
@@ -197,20 +203,28 @@ const HomePage = () => {
                 aboveThreshold.forEach(emotionPlusConfidence => {
                   requestEmotionResult += "- " + emotionPlusConfidence[0].charAt(0).toUpperCase() + emotionPlusConfidence[0].slice(1) + " (" + emotionPlusConfidence[1] + "%)\n";
                 });
-              }
+               }
 
-              setRequestResult(requestEmotionResult);
+                setRequestResult(requestEmotionResult);
 
-              matched_initialisms = checkForInitialisms(inputText);
-              matched_expansions = checkForExpansions(inputText);
-              setInitialisms(matched_initialisms);
-              setExpansions(matched_expansions);
+                matched_initialisms = checkForInitialisms(translatedResponse);
+                matched_expansions = checkForExpansions(translatedResponse);
+                setInitialisms(matched_initialisms);
+                setExpansions(matched_expansions);
+              })
+              .catch(e => {
+                console.log("Error with prediction!");
+                console.log(e);
               })
             })
             .catch(e => {
-              console.log("Translation Failed!!!");
+              console.log("Translation Failed!");
               console.log(e);
             })
+            analyzeButtonRef.current.setNativeProps({
+              style: {
+                backgroundColor: '#46024E'
+              }});
           }}
           disabled={isDisabled}
           ref={analyzeButtonRef}>
